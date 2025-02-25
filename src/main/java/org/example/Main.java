@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.Cliente.Cliente;
+import org.example.Pedido.GerenciarPedido;
 import org.example.Produto.TesteProduto;
 
 public class Main {
@@ -9,5 +10,8 @@ public class Main {
         System.out.println(cliente1.toString());
 
         TesteProduto.executarTeste(); // apagar depois - apenas teste
+
+        GerenciarPedido gerenciarPedido = new GerenciarPedido(1);
+        gerenciarPedido.exibirMenu();
     }
 }
