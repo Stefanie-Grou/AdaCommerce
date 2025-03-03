@@ -25,25 +25,18 @@ public class Cliente {
     }
 
     public void setNumeroCPF(String numeroCPF) {
-        try {
-            validarCPF();
             this.numeroCPF = numeroCPF;
-            this.status = "Válido";
-        } catch (Exception e) {
-            this.status = "Inválido";
-        }
-    }
-
-    void validarCPF() throws Exception {
-        if (numeroCPF.length() != 11) {
-            throw new Exception("O CPF deve ter 11 dígitos, sem pontos ou traços.");
-        }
     }
 
     public String getStatus() {
         return status;
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    // Getters e setters restantes...
     public String getNome() {
         return nome;
     }
@@ -62,10 +55,6 @@ public class Cliente {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public String getCep() {

@@ -10,9 +10,6 @@ public class Main {
 //        GerenciarPedido gerenciarPedido = new GerenciarPedido(1);
         GerenciadorDoMenu.exibirMenu();
 
-//        Cliente cliente1 = new Cliente("João Rodrigues","45875698741","joao@gmail.com","11123456789","05387458","25","Nenhum");
-//        System.out.println(cliente1.toString());
-
 //        TesteProduto.executarTeste(); // apagar depois - apenas teste
 
     }

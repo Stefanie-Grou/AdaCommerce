@@ -1,6 +1,9 @@
 package org.example.GerenciadorGeral;
 
+import org.example.BancoDeDados.BancoDeDadosClientes;
+import org.example.Cliente.AtualizarCliente;
 import org.example.Cliente.CriarCliente;
+import org.example.Cliente.listarClientes;
 import org.example.Pedido.ItemPedido;
 import org.example.Pedido.Pedido;
 import org.example.Produto.Produto;
@@ -20,6 +23,8 @@ public class GerenciadorDoMenu {
             System.out.println("6. Realizar Pagamento");
             System.out.println("7. Exibir Pedido");
             System.out.println("8. Cadastrar o Cliente");
+            System.out.println("9. Listar clientes");
+            System.out.println("10. Atualizar cliente");
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
 
@@ -100,9 +105,17 @@ public class GerenciadorDoMenu {
                     break;
 
                 case 8:
+//                    BancoDeDadosClientes.cadastrarCliente();
                     CriarCliente.cadastrarCliente();
                             break;
 
+                case 9:
+                    listarClientes.listarClientes();
+                    break;
+
+                case 10:
+                    AtualizarCliente.atualizarCliente();
+                    break;
                 case 0:
                     System.out.println("Saindo...");
                     scanner.close();
