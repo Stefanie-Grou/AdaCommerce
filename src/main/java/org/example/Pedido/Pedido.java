@@ -1,62 +1,125 @@
 package org.example.Pedido;
 
+import org.example.Carrinho.ItemCarrinho;
+import org.example.Cliente.Cliente;
 import org.example.Produto.Produto;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
+
+import static org.example.BancoDeDados.BancoDeDadosProdutos.listaProdutos;
 
 public class Pedido {
     private int id;
-    private List<ItemPedido> itens;
-    private String status;
-    private Date dataCriacao;
+    private static List<ItemPedido> itens;
+    private static String status;
+    private LocalDate dataCriacao;
+    private Cliente cliente;
+    private double total;
 
-    public Pedido(int id) {
+    public Pedido() {
         this.id = id;
-        this.itens = new ArrayList<>();
-        this.status = "Em aberto";
-        this.dataCriacao = new Date();
+        this.itens = itens == null ? new ArrayList<>() : itens;
+        this.status = String.valueOf(StatusDePedido.ABERTO);
+        this.dataCriacao = LocalDate.now();
+        this.cliente = cliente;
+        this.total = calcularTotal();
+    }
+    private List<ItemCarrinho> itensCarrinho = new ArrayList<>();
+
+    public void adicionarItemAoCarrinho(Scanner sc) {
+        boolean exit = false;
+        do {
+            System.out.println("Digite o código do produto ou 0 para sair: ");
+            int inputCode = sc.nextInt();
+
+            if (inputCode == 0) {
+                exit = true;
+            } else {
+                Produto produto = buscarProdutoPorCodigo(inputCode);
+                if (produto == null) {
+                    System.out.println("Produto não encontrado. Tente novamente.");
+                    continue;
+                }
+
+                System.out.println("Digite a quantidade do produto desejado: ");
+                int quantidade = sc.nextInt();
+
+                if (quantidade <= 0) {
+                    System.out.println("Quantidade inválida. Tente novamente.");
+                    continue;
+                }
+                itensCarrinho.add(new ItemCarrinho(produto, quantidade));
+            }
+        } while (!exit);
+        total = calcularTotal();
     }
 
-    public void adicionarItem(Produto produto, int quantidade, double valorVenda) {
-        ItemPedido item = new ItemPedido(produto, quantidade, valorVenda);
-        itens.add(item);
+    private Produto buscarProdutoPorCodigo(int codigo) {
+        for (Produto p : listaProdutos) {
+            if (p.getIdentificador() == codigo) {
+                return p;
+            }
+        }
+        return null;
     }
 
-//    public void removerItem(Produto produto) {
-//        itens.removeIf(item -> item.getProduto().getNome().equals(produto.getNome()));
-//    }
-//
+    public void removerItem(Scanner sc) {
+        System.out.println("Digite o identificador do produto a ser removido: ");
+        int inputCode = sc.nextInt();
+        if (inputCode == 0) {
+            System.out.println("Código inválido.");
+            return;
+        }
+        boolean itemRemovido = itensCarrinho.removeIf(item -> item.getProduto().getIdentificador() == inputCode);
+
+        if (itemRemovido) {
+            System.out.println("Produto removido com sucesso.");
+        } else {
+            System.out.println("Produto não encontrado no carrinho.");
+        }
+        total = calcularTotal();
+    }
+
 //    public void alterarQuantidadeItem(Produto produto, int novaQuantidade) {
 //        for (ItemPedido item : itens) {
-//            if (item.getProduto().getNome().equals(produto.getNome())) {
+//            if (item.getProduto().getId() == produto.getId()) {
 //                item.setQuantidade(novaQuantidade);
 //                break;
 //            }
 //        }
+//        total = calcularTotal();
 //    }
 
     public double calcularTotal() {
         double total = 0;
-        for (ItemPedido item : itens) {
-            total += item.getSubtotal();
+
+        for (ItemCarrinho item : itensCarrinho) {
+            double valorVenda = item.getProduto().getValorVenda();
+            int quantidade = item.getQuantidade();
+            total += valorVenda * quantidade;
         }
+        System.out.println("Total do carrinho: R$" + total);
         return total;
     }
 
-    public void finalizarPedido() throws PedidoException {
+
+    public static void fecharCarrinho() {
         if (itens.isEmpty()) {
-            throw new PedidoException("Não é possível finalizar um pedido vazio.");
+            System.out.println("Não é possível finalizar um pedido vazio.");
+            return;
+        } else {
+            status = String.valueOf(StatusDePedido.AGUARDANDO_PAGAMENTO);
         }
-        status = "Finalizado";
     }
 
-    public void realizarPagamento() throws PagamentoException {
-        if (!status.equals("Finalizado")) {
-            throw new PagamentoException("O pagamento só pode ser realizado após a finalização do pedido.");
-        }
-        // Implementar lógica de pagamento aqui
+    public static void realizarPagamento() {
+        if (!status.equals(String.valueOf(StatusDePedido.AGUARDANDO_PAGAMENTO))) {
+            System.out.println("O pagamento só pode ser realizado após a finalização do pedido.");
+        } else {
+            status = String.valueOf(StatusDePedido.APROVADO);}
     }
 
     public List<ItemPedido> getItens() {
@@ -67,7 +130,7 @@ public class Pedido {
         return id;
     }
 
-    public Date getDataCriacao() {
+    public LocalDate getDataCriacao() {
         return dataCriacao;
     }
 
@@ -85,5 +148,18 @@ public class Pedido {
         public PagamentoException(String message) {
             super(message);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Pedido{" +
+                "id=" + id +
+                ", itens=" + itens +
+                ", status='" + status + '\'' +
+                ", dataCriacao=" + dataCriacao +
+                ", cliente=" + cliente +
+                ", total=" + total +
+                ", itensCarrinho=" + itensCarrinho +
+                '}';
     }
 }

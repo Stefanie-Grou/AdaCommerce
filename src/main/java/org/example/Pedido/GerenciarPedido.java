@@ -7,8 +7,8 @@ public class GerenciarPedido {
     private Pedido pedido;
     private Scanner scanner;
 
-    public GerenciarPedido(int idPedido) {
-        this.pedido = new Pedido(idPedido);
-        this.scanner = new Scanner(System.in);
-    }
+//    public GerenciarPedido(int idPedido) {
+//        this.pedido = new Pedido(idPedido);
+//        this.scanner = new Scanner(System.in);
+//    }
 }

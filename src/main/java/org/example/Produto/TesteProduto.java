@@ -3,7 +3,7 @@ package org.example.Produto;
 public class TesteProduto { // Apagar essa classe depois - apenas teste
     public static void executarTeste() {
         Produto produto = new Produto(
-                "001",
+                1,
                 "Notebook",
                 "Eletrônicos",
                 2500.00,

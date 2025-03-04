@@ -4,7 +4,7 @@ import org.example.BancoDeDados.BancoDeDadosProdutos;
 
 public class GerenciadorProdutos {
     public static void criarProduto(
-            String identificador,
+            int identificador,
             String nome,
             String categoria,
             double valorProduto,
