@@ -3,36 +3,40 @@ package org.example.Cliente;
 public class Cliente {
     private String nome;
     private String numeroCPF;
-    private int telefone;
+    private String email;
+    private String telefone;
     private String status;
-    private int cep;
-    private int numeroDaResidencia;
+    private String cep;
+    private String numeroDaResidencia;
     private String complementoDoEndereco;
+
+    public Cliente(String nome, String numeroCPF, String email, String telefone, String cep, String numeroDaResidencia, String complementoDoEndereco) {
+        this.nome = nome;
+        this.numeroCPF = numeroCPF;
+        this.email = email;
+        this.telefone = telefone;
+        this.cep = cep;
+        this.numeroDaResidencia = numeroDaResidencia;
+        this.complementoDoEndereco = complementoDoEndereco;
+    }
 
     public String getNumeroCPF() {
         return numeroCPF;
     }
 
     public void setNumeroCPF(String numeroCPF) {
-        try {
-            validarCPF(numeroCPF);
             this.numeroCPF = numeroCPF;
-            this.status = "Válido";
-        } catch (Exception e) {
-            this.status = "Inválido";
-        }
-    }
-
-    private void validarCPF(String numeroCPF) throws Exception {
-        if (numeroCPF.length() != 11) {
-            throw new Exception("O CPF deve ter 11 dígitos, sem pontos ou traços.");
-        }
     }
 
     public String getStatus() {
         return status;
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    // Getters e setters restantes...
     public String getNome() {
         return nome;
     }
@@ -41,31 +45,31 @@ public class Cliente {
         this.nome = nome;
     }
 
-    public int getTelefone() {
+    public String getEmail() { return email; }
+
+    public void setEmail(String email) { this.email = email; }
+
+    public String getTelefone() {
         return telefone;
     }
 
-    public void setTelefone(int telefone) {
+    public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public int getCep() {
+    public String getCep() {
         return cep;
     }
 
-    public void setCep(int cep) {
+    public void setCep(String cep) {
         this.cep = cep;
     }
 
-    public int getNumeroDaResidencia() {
+    public String getNumeroDaResidencia() {
         return numeroDaResidencia;
     }
 
-    public void setNumeroDaResidencia(int numeroDaResidencia) {
+    public void setNumeroDaResidencia(String numeroDaResidencia) {
         this.numeroDaResidencia = numeroDaResidencia;
     }
 
@@ -77,4 +81,16 @@ public class Cliente {
         this.complementoDoEndereco = complementoDoEndereco;
     }
 
+    @Override
+    public String toString() {
+        return "Cliente{" +
+                "nome='" + nome + '\'' +
+                ", numeroCPF='" + numeroCPF + '\'' +
+                ", email='" + email + '\'' +
+                ", telefone='" + telefone + '\'' +
+                ", cep='" + cep + '\'' +
+                ", numeroDaResidencia='" + numeroDaResidencia + '\'' +
+                ", complementoDoEndereco='" + complementoDoEndereco + '\'' +
+                '}';
+    }
 }
