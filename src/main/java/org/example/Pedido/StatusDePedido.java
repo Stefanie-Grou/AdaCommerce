@@ -5,5 +5,5 @@ enum StatusDePedido {
     AGUARDANDO_PAGAMENTO,
     APROVADO,
     ENVIADO,
-    CONCLUÍDO
+    ENCERRADO
 }

@@ -7,14 +7,10 @@ public class ItemPedido {
     private int quantidade;
     private double valorVenda;
 
-    public ItemPedido(Produto produto, int quantidade, double valorVenda) {
+    public ItemPedido(Produto produto, int quantidade) {
         this.produto = produto;
         this.quantidade = quantidade;
         this.valorVenda = valorVenda;
-    }
-
-    public double getSubtotal() {
-        return quantidade * valorVenda;
     }
 
     public Produto getProduto() {
