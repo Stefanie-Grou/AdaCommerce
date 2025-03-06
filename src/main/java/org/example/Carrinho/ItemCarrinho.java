@@ -19,15 +19,8 @@ public class ItemCarrinho {
         return quantidade;
     }
 
-    public void setProduto(Produto produto) {
-        this.produto = produto;
-    }
-
     public void setQuantidade(int quantidade) {
         this.quantidade = quantidade;
     }
 
-    public void adicionarQuantidade(int quantidade) {
-        this.quantidade += quantidade;
-    }
 }

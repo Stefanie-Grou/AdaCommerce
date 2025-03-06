@@ -18,14 +18,6 @@ public class BancoDeDadosProdutos {
         }
     }
 
-    public static void imprimeUltimoProduto() {
-        if (listaProdutos.isEmpty()) {
-            System.out.println("Sem produtos cadastrados!");
-        } else {
-            System.out.println(listaProdutos.get(listaProdutos.size() - 1));
-        }
-    }
-
     public static void criarProdutosExemplo() {
         Produto camisetaReta = new Produto(1, "Camiseta Reta", "Vestuário", 30.48, 50.49, 28.45);
         Produto smartPhone = new Produto(2, "Moto G34", "Eletrônicos", 950.78, 1034.89, 200.58);

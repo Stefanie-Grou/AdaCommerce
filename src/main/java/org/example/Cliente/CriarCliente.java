@@ -6,7 +6,7 @@ import static org.example.BancoDeDados.BancoDeDadosClientes.listaClientes;
 
 public class CriarCliente {
     public static Cliente cadastrarCliente() {
-        final int CPF_SIZE = 11; // Declarado como constante
+        final int CPF_SIZE = 11;
         Scanner sc = new Scanner(System.in);
 
         System.out.println("Entre com os seguintes dados do cliente:");

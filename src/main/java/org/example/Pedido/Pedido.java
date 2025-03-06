@@ -182,18 +182,6 @@ public class Pedido {
         return true;
     }
 
-    public List<ItemPedido> getItens() {
-        return itens;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public LocalDate getDataCriacao() {
-        return dataCriacao;
-    }
-
     public String getStatus() {
         return status;
     }

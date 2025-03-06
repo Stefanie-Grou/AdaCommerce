@@ -24,19 +24,6 @@ public class Cliente {
         return numeroCPF;
     }
 
-    public void setNumeroCPF(String numeroCPF) {
-            this.numeroCPF = numeroCPF;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    // Getters e setters restantes...
     public String getNome() {
         return nome;
     }
@@ -57,24 +44,12 @@ public class Cliente {
         this.telefone = telefone;
     }
 
-    public String getCep() {
-        return cep;
-    }
-
     public void setCep(String cep) {
         this.cep = cep;
     }
 
-    public String getNumeroDaResidencia() {
-        return numeroDaResidencia;
-    }
-
     public void setNumeroDaResidencia(String numeroDaResidencia) {
         this.numeroDaResidencia = numeroDaResidencia;
-    }
-
-    public String getComplementoDoEndereco() {
-        return complementoDoEndereco;
     }
 
     public void setComplementoDoEndereco(String complementoDoEndereco) {
