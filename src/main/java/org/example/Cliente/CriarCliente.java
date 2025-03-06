@@ -5,18 +5,18 @@ import java.util.Scanner;
 import static org.example.BancoDeDados.BancoDeDadosClientes.listaClientes;
 
 public class CriarCliente {
-    public static void cadastrarCliente() {
-        final int CPF_SIZE = 11; // Declarado como constante
+    public static Cliente cadastrarCliente() {
+        final int CPF_SIZE = 11;
         Scanner sc = new Scanner(System.in);
 
         System.out.println("Entre com os seguintes dados do cliente:");
         System.out.print("Nome: ");
         String nome = sc.nextLine();
 
-        System.out.print("Número do CPF: ");
         boolean valid = false;
         String numeroCPF;
         do {
+            System.out.print("Número do CPF: ");
             numeroCPF = sc.nextLine();
             int intLength = numeroCPF.length();
             if (intLength == CPF_SIZE) {
@@ -46,5 +46,6 @@ public class CriarCliente {
         listaClientes.add(novoCliente);
 
         System.out.println("Cliente cadastrado com sucesso!");
+        return novoCliente;
     }
 }

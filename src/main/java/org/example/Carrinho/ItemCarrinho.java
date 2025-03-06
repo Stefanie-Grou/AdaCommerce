@@ -19,7 +19,8 @@ public class ItemCarrinho {
         return quantidade;
     }
 
-    public void adicionarQuantidade(int quantidade) {
-        this.quantidade += quantidade;
+    public void setQuantidade(int quantidade) {
+        this.quantidade = quantidade;
     }
+
 }
