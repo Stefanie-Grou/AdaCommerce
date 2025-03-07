@@ -1,19 +1,17 @@
 package org.example;
 
-import org.example.BancoDeDados.BancoDeDadosProdutos;
-import org.example.Carrinho.ItemCarrinho;
-import org.example.GerenciadorGeral.GerenciadorDoMenu;
-import org.example.Pedido.IniciadorDoCarrinho;
-
-import java.util.List;
-
+import org.example.GerenciadorGeral.GerenciadorMenuPrincipal;
 
 public class Main {
     public static void main(String[] args) {
-        IniciadorDoCarrinho itensDoCarrinho = new IniciadorDoCarrinho();
-        List<ItemCarrinho> itensCarrinho = itensDoCarrinho.getItensCarrinho();
+        System.out.println("======================================");
+        System.out.println("Bem-vindo ao E-Commerce da Ada Tech!");
+        System.out.println("======================================");
 
-        BancoDeDadosProdutos.criarProdutosExemplo();
-        GerenciadorDoMenu.exibirMenu();
+        GerenciadorMenuPrincipal.exibirMenuPrincipal();
+
+        System.out.println("======================================");
+        System.out.println("Sistema encerrado. Obrigado por utilizar!");
+        System.out.println("======================================");
     }
 }

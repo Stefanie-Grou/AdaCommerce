@@ -15,7 +15,7 @@ import static org.example.BancoDeDados.BancoDeDadosProdutos.listaProdutos;
 public class Pedido {
     private int id;
     private List<ItemPedido> itens;
-    private String status;
+    private StatusDePedido status;
     private LocalDate dataCriacao;
     private Cliente cliente;
     private double total;
@@ -23,10 +23,10 @@ public class Pedido {
     private List<ItemCarrinho> itensCarrinho;
     private List<Notificador> notificadores;
 
-    public Pedido(IniciadorDoCarrinho iniciadorDoCarrinho, Cliente cliente, int id,List<Notificador> notificadores) {
+    public Pedido(IniciadorDoCarrinho iniciadorDoCarrinho, Cliente cliente, int id, List<Notificador> notificadores) {
         this.id = id;
         this.itens = new ArrayList<>();
-        this.status = String.valueOf(StatusDePedido.ABERTO);
+        this.status = StatusDePedido.ABERTO;
         this.dataCriacao = LocalDate.now();
         this.cliente = cliente;
         this.itensCarrinho = iniciadorDoCarrinho.getItensCarrinho();
@@ -34,13 +34,27 @@ public class Pedido {
         this.total = calcularTotal();
     }
 
+    // Adicionar o método getId()
+    public int getId() {
+        return id;
+    }
+
     public void adicionarItemAoCarrinho(Scanner sc) {
         if (!aptoAlterarCarrinho()) {
             return;
         }
+
+        System.out.println("\n=== Produtos Disponíveis ===");
+        for (Produto produto : listaProdutos) {
+            System.out.printf("%d. %s - R$ %.2f%n",
+                    produto.getIdentificador(),
+                    produto.getNome(),
+                    produto.getValorVenda());
+        }
+
         boolean exit = false;
         do {
-            System.out.println("Digite o código do produto ou 0 para sair: ");
+            System.out.println("\nDigite o código do produto ou 0 para sair: ");
             int inputCode = sc.nextInt();
 
             if (inputCode == 0) {
@@ -59,9 +73,31 @@ public class Pedido {
                     System.out.println("Quantidade inválida. Tente novamente.");
                     continue;
                 }
-                itensCarrinho.add(new ItemCarrinho(produto, quantidade));
+
+                // Verifica se o produto já existe no carrinho
+                boolean produtoExistente = false;
+                for (ItemCarrinho item : itensCarrinho) {
+                    if (item.getProduto().getIdentificador() == produto.getIdentificador()) {
+                        item.setQuantidade(item.getQuantidade() + quantidade);
+                        produtoExistente = true;
+                        System.out.println("Quantidade atualizada no carrinho!");
+                        break;
+                    }
+                }
+
+                if (!produtoExistente) {
+                    itensCarrinho.add(new ItemCarrinho(produto, quantidade));
+                    System.out.println("Produto adicionado ao carrinho!");
+                }
+
+                System.out.println("Deseja adicionar mais produtos? (1-Sim/0-Não)");
+                int continuar = sc.nextInt();
+                if (continuar == 0) {
+                    exit = true;
+                }
             }
         } while (!exit);
+
         total = calcularTotal();
     }
 
@@ -78,12 +114,25 @@ public class Pedido {
         if (!aptoAlterarCarrinho()) {
             return;
         }
-        System.out.println("Digite o identificador do produto a ser removido: ");
-        int inputCode = sc.nextInt();
-        if (inputCode == 0) {
-            System.out.println("Código inválido.");
+
+        if (itensCarrinho.isEmpty()) {
+            System.out.println("O carrinho está vazio.");
             return;
         }
+
+        System.out.println("\n=== Itens no Carrinho ===");
+        for (int i = 0; i < itensCarrinho.size(); i++) {
+            ItemCarrinho item = itensCarrinho.get(i);
+            System.out.printf("%d. %s - Quantidade: %d - Valor unitário: R$ %.2f%n",
+                    item.getProduto().getIdentificador(),
+                    item.getProduto().getNome(),
+                    item.getQuantidade(),
+                    item.getProduto().getValorVenda());
+        }
+
+        System.out.println("\nDigite o identificador do produto a ser removido: ");
+        int inputCode = sc.nextInt();
+
         boolean itemRemovido = itensCarrinho.removeIf(item -> item.getProduto().getIdentificador() == inputCode);
 
         if (itemRemovido) {
@@ -91,6 +140,7 @@ public class Pedido {
         } else {
             System.out.println("Produto não encontrado no carrinho.");
         }
+
         total = calcularTotal();
     }
 
@@ -102,7 +152,11 @@ public class Pedido {
             int quantidade = item.getQuantidade();
             total += valorVenda * quantidade;
         }
-        System.out.printf("Total do carrinho: R$ %.2f\n", total);
+
+        if (!itensCarrinho.isEmpty()) {
+            System.out.printf("Total do carrinho: R$ %.2f%n", total);
+        }
+
         return total;
     }
 
@@ -110,92 +164,186 @@ public class Pedido {
         if (itensCarrinho.isEmpty()) {
             System.out.println("Não é possível finalizar um pedido vazio.");
             return;
-        } else {
-            status = String.valueOf(StatusDePedido.AGUARDANDO_PAGAMENTO);
-            System.out.println("Novo status para o pedido: " + status);
-            notificarCliente("Seu pedido foi fechado e está aguardando pagamento.");
         }
+
+        if (total <= 0) {
+            System.out.println("O valor total do pedido deve ser maior que zero.");
+            return;
+        }
+
+        status = StatusDePedido.AGUARDANDO_PAGAMENTO;
+        System.out.println("Pedido finalizado com sucesso!");
+        System.out.println("Novo status para o pedido: " + status);
+
+        for (ItemCarrinho itemCarrinho : itensCarrinho) {
+            itens.add(new ItemPedido(
+                    itemCarrinho.getProduto(),
+                    itemCarrinho.getQuantidade(),
+                    itemCarrinho.getProduto().getValorVenda()
+            ));
+        }
+
+        notificarCliente("Seu pedido #" + id + " foi finalizado e está aguardando pagamento. Valor total: R$ " + String.format("%.2f", total));
     }
 
     private void notificarCliente(String mensagem) {
-        notificadores.forEach(notificador -> notificador.notificar(mensagem));
+        for (Notificador notificador : notificadores) {
+            notificador.notificar(mensagem);
+        }
     }
 
     public void realizarPagamento() {
-        if (!status.equals(String.valueOf(StatusDePedido.AGUARDANDO_PAGAMENTO))) {
-            System.out.println("O pagamento só pode ser realizado após a finalização do pedido.");
-        } else {
-            status = String.valueOf(StatusDePedido.PAGAMENTO_APROVADO);
-            System.out.println("Pagamento aprovado com sucesso.");
-//            notificarCliente("Seu pagamento foi aprovado com sucesso.");
+        if (status != StatusDePedido.AGUARDANDO_PAGAMENTO) {
+            System.out.println("O pagamento só pode ser realizado para pedidos aguardando pagamento.");
+            System.out.println("Status atual: " + status);
+            return;
         }
+
+        status = StatusDePedido.PAGO;
+        System.out.println("Pagamento aprovado com sucesso!");
+        System.out.println("Novo status para o pedido: " + status);
+
+        notificarCliente("O pagamento do seu pedido #" + id + " foi aprovado com sucesso! Seu pedido será enviado em breve.");
+    }
+
+    public void realizarEntrega() {
+        if (status != StatusDePedido.PAGO) {
+            System.out.println("A entrega só pode ser realizada para pedidos pagos.");
+            System.out.println("Status atual: " + status);
+            return;
+        }
+
+        status = StatusDePedido.ENVIADO;
+        System.out.println("Pedido enviado com sucesso!");
+        System.out.println("Novo status para o pedido: " + status);
+
+        notificarCliente("Seu pedido #" + id + " foi enviado e está a caminho!");
+    }
+
+    public void finalizarEntrega() {
+        if (status != StatusDePedido.ENVIADO) {
+            System.out.println("A finalização só pode ser realizada para pedidos enviados.");
+            System.out.println("Status atual: " + status);
+            return;
+        }
+
+        status = StatusDePedido.FINALIZADO;
+        System.out.println("Entrega finalizada com sucesso!");
+        System.out.println("Novo status para o pedido: " + status);
+
+        notificarCliente("Seu pedido #" + id + " foi entregue! Obrigado por comprar conosco!");
     }
 
     public void alterarQuantidade(Scanner sc) {
         if (!aptoAlterarCarrinho()) {
             return;
         }
-        boolean exit = false;
-        do {
-            System.out.println("Digite o código do produto ou 0 para sair: ");
-            int inputCode = sc.nextInt();
 
-            if (inputCode == 0) {
-                exit = true;
-            } else {
-                Produto produto = buscarProdutoPorCodigo(inputCode);
-                if (produto == null) {
-                    System.out.println("Produto não encontrado. Tente novamente.");
-                    continue;
-                }
+        if (itensCarrinho.isEmpty()) {
+            System.out.println("O carrinho está vazio.");
+            return;
+        }
 
-                System.out.println("Digite a quantidade do produto desejado: ");
+        System.out.println("\n=== Itens no Carrinho ===");
+        for (int i = 0; i < itensCarrinho.size(); i++) {
+            ItemCarrinho item = itensCarrinho.get(i);
+            System.out.printf("%d. %s - Quantidade: %d - Valor unitário: R$ %.2f%n",
+                    item.getProduto().getIdentificador(),
+                    item.getProduto().getNome(),
+                    item.getQuantidade(),
+                    item.getProduto().getValorVenda());
+        }
+
+        System.out.println("\nDigite o código do produto que deseja alterar ou 0 para sair: ");
+        int inputCode = sc.nextInt();
+
+        if (inputCode == 0) {
+            return;
+        }
+
+        boolean itemEncontrado = false;
+        for (ItemCarrinho item : itensCarrinho) {
+            if (item.getProduto().getIdentificador() == inputCode) {
+                System.out.println("Digite a nova quantidade do produto: ");
                 int quantidade = sc.nextInt();
 
                 if (quantidade <= 0) {
-                    System.out.println("Quantidade inválida. Tente novamente.");
-                    continue;
+                    System.out.println("Quantidade inválida. O produto será removido do carrinho.");
+                    itensCarrinho.remove(item);
+                } else {
+                    item.setQuantidade(quantidade);
+                    System.out.println("Quantidade atualizada com sucesso!");
                 }
 
-                boolean itemAtualizado = false;
-                for (ItemCarrinho item : itensCarrinho) {
-                    if (item.getProduto().getIdentificador() == produto.getIdentificador()) {
-                        item.setQuantidade(quantidade);
-                        itemAtualizado = true;
-                        break;
-                    }
-                }
-
-                if (!itemAtualizado) {
-                    itensCarrinho.add(new ItemCarrinho(produto, quantidade));
-                }
+                itemEncontrado = true;
+                break;
             }
-        } while (!exit);
+        }
+
+        if (!itemEncontrado) {
+            System.out.println("Produto não encontrado no carrinho.");
+        }
+
+        total = calcularTotal();
     }
 
     public boolean aptoAlterarCarrinho() {
-        String statusDoPedido = getStatus();
-        if (!statusDoPedido.equals(String.valueOf(StatusDePedido.ABERTO))) {
+        if (status != StatusDePedido.ABERTO) {
             System.out.println("Apenas pedidos em aberto podem ser alterados.");
+            System.out.println("Status atual: " + status);
             return false;
         }
         return true;
     }
 
-    public String getStatus() {
+    public StatusDePedido getStatus() {
         return status;
+    }
+
+    public void exibirItensCarrinho() {
+        if (itensCarrinho.isEmpty()) {
+            System.out.println("O carrinho está vazio.");
+            return;
+        }
+
+        System.out.println("\n=== Itens no Carrinho ===");
+        for (int i = 0; i < itensCarrinho.size(); i++) {
+            ItemCarrinho item = itensCarrinho.get(i);
+            System.out.printf("%d. %s - Quantidade: %d - Valor unitário: R$ %.2f - Subtotal: R$ %.2f%n",
+                    item.getProduto().getIdentificador(),
+                    item.getProduto().getNome(),
+                    item.getQuantidade(),
+                    item.getProduto().getValorVenda(),
+                    item.getQuantidade() * item.getProduto().getValorVenda());
+        }
+
+        System.out.printf("Total do carrinho: R$ %.2f%n", total);
     }
 
     @Override
     public String toString() {
-        return "Pedido{" +
-                "id=" + id +
-                ", itens=" + itens +
-                ", status='" + status + '\'' +
-                ", dataCriacao=" + dataCriacao +
-                ", cliente=" + cliente +
-                ", total=" + total +
-                ", itensCarrinho=" + itensCarrinho +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n========== DETALHES DO PEDIDO ==========\n");
+        sb.append("ID: ").append(id).append("\n");
+        sb.append("Data da criação: ").append(dataCriacao).append("\n");
+        sb.append("Cliente: ").append(cliente.getNome()).append("\n");
+        sb.append("Status: ").append(status).append("\n");
+        sb.append("Itens:\n");
+
+        if (itensCarrinho.isEmpty()) {
+            sb.append("  Nenhum item no carrinho\n");
+        } else {
+            for (ItemCarrinho item : itensCarrinho) {
+                sb.append("  - ").append(item.getProduto().getNome())
+                        .append(" | Qtd: ").append(item.getQuantidade())
+                        .append(" | Valor unitário: R$ ").append(String.format("%.2f", item.getProduto().getValorVenda()))
+                        .append(" | Subtotal: R$ ").append(String.format("%.2f", item.getQuantidade() * item.getProduto().getValorVenda()))
+                        .append("\n");
+            }
+        }
+
+        sb.append("Total: R$ ").append(String.format("%.2f", total)).append("\n");
+
+        return sb.toString();
     }
 }
