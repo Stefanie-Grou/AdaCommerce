@@ -15,6 +15,7 @@ public class Cliente {
         this.numeroCPF = numeroCPF;
         this.email = email;
         this.telefone = telefone;
+        this.status = "ATIVO";
         this.cep = cep;
         this.numeroDaResidencia = numeroDaResidencia;
         this.complementoDoEndereco = complementoDoEndereco;
@@ -32,9 +33,13 @@ public class Cliente {
         this.nome = nome;
     }
 
-    public String getEmail() { return email; }
+    public String getEmail() {
+        return email;
+    }
 
-    public void setEmail(String email) { this.email = email; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getTelefone() {
         return telefone;
@@ -44,12 +49,32 @@ public class Cliente {
         this.telefone = telefone;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getCep() {
+        return cep;
+    }
+
     public void setCep(String cep) {
         this.cep = cep;
     }
 
+    public String getNumeroDaResidencia() {
+        return numeroDaResidencia;
+    }
+
     public void setNumeroDaResidencia(String numeroDaResidencia) {
         this.numeroDaResidencia = numeroDaResidencia;
+    }
+
+    public String getComplementoDoEndereco() {
+        return complementoDoEndereco;
     }
 
     public void setComplementoDoEndereco(String complementoDoEndereco) {
@@ -63,6 +88,7 @@ public class Cliente {
                 ", numeroCPF='" + numeroCPF + '\'' +
                 ", email='" + email + '\'' +
                 ", telefone='" + telefone + '\'' +
+                ", status='" + status + '\'' +
                 ", cep='" + cep + '\'' +
                 ", numeroDaResidencia='" + numeroDaResidencia + '\'' +
                 ", complementoDoEndereco='" + complementoDoEndereco + '\'' +
